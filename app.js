@@ -11,7 +11,6 @@ const state = {
 
 const qs = (id) => document.getElementById(id);
 
-// Persistence
 const loadState = () => {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (saved) Object.assign(state, JSON.parse(saved));
@@ -54,9 +53,6 @@ const router = {
   }
 };
 
-
-
-// Handle browser back/forward
 window.onpopstate = (e) => {
   if (e.state) {
     router.currentPage = e.state.page;
@@ -64,7 +60,6 @@ window.onpopstate = (e) => {
   }
 };
 
-// Navigation links
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.nav-link').forEach(link => {
     link.onclick = (e) => {
@@ -73,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   });
 
-  // Mobile menu
   const mobileMenuBtn = qs('mobile-menu-btn');
   const mobileMenu = qs('mobile-menu');
   if (mobileMenuBtn && mobileMenu) {
@@ -82,13 +76,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
   }
 
-  // Initial render
   const hash = window.location.hash.slice(1) || 'home';
   router.currentPage = hash;
   router.render();
 });
 
-// Page Templates
+// Page parts 
 function getHomePage() {
   const attempts = state.history.length;
   const avg = attempts ? Math.round(state.history.reduce((s,h)=>s+h.score,0)/attempts) : 0;
@@ -359,7 +352,6 @@ function getAdminPage() {
   `;
 }
 
-// Mock functions
 const generateSummary = async (text) => {
   if (!text.trim()) return 'No content found.';
   await new Promise(resolve => setTimeout(resolve, 1000));
