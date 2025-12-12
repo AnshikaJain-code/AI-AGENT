@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-slate-900 text-slate-100">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Study Assistant</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/11.0.1/firebase-auth-compat.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body class="min-h-screen bg-slate-950">
+  <header class="border-b border-white/5 sticky top-0 z-30 backdrop-blur bg-slate-950/70">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl gradient"></div>
+        <div>
+          <p class="text-sm text-slate-400">AI-Powered</p>
+          <h1 class="text-xl font-bold text-slate-50">Study Assistant</h1>
+        </div>
+      </div>
+      <nav class="hidden md:flex gap-4 text-sm text-slate-300">
+        <a href="#upload" class="hover:text-white">Upload</a>
+        <a href="#summary" class="hover:text-white">Summary</a>
+        <a href="#quiz" class="hover:text-white">Quiz</a>
+        <a href="#dashboard" class="hover:text-white">Dashboard</a>
+        <a href="#pomodoro" class="hover:text-white">Pomodoro</a>
+      </nav>
+      <div class="flex items-center gap-2">
+        <span id="user-chip" class="hidden px-3 py-1 rounded-lg bg-white/10 border border-white/10 text-xs text-slate-200"></span>
+        <button id="btn-login" class="px-4 py-2 rounded-lg bg-white/10 border border-white/10 text-sm">Login</button>
+        <button id="btn-logout" class="hidden px-4 py-2 rounded-lg bg-white/10 border border-white/10 text-sm">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-10 space-y-10">
+    <!-- Hero -->
+    <section class="glass rounded-3xl p-8 border border-white/5">
+      <div class="grid md:grid-cols-2 gap-8 items-center">
+        <div class="space-y-4">
+          <p class="text-xs uppercase tracking-[0.3em] text-indigo-300">Revise faster. Learn smarter.</p>
+          <h2 class="text-3xl md:text-4xl font-bold text-white">Upload notes, get summaries, generate quizzes, track progress, stay consistent.</h2>
+          <p class="text-slate-300">AI summaries, MCQs by difficulty, performance analytics, and a Pomodoro timer—everything in one place.</p>
+          <div class="flex flex-wrap gap-3">
+            <button id="cta-start" class="px-4 py-2 rounded-lg gradient text-slate-900 font-semibold">Start now</button>
+            <button class="px-4 py-2 rounded-lg bg-white/10 border border-white/10 text-slate-100">Live demo</button>
+          </div>
+        </div>
+        <div class="glass border border-indigo-500/30 rounded-2xl p-6 bg-indigo-500/5">
+          <p class="text-sm text-indigo-200 mb-3">Quick Summary</p>
+          <p id="hero-summary" class="text-slate-100 text-sm leading-6">No summary yet. Upload your notes to begin.</p>
+          <div class="mt-4 grid grid-cols-3 gap-3 text-xs text-slate-200">
+            <div class="bg-white/5 rounded-lg p-3">
+              <p class="text-slate-400">Quizzes</p>
+              <p id="stat-quiz-count" class="text-lg font-semibold">0</p>
+            </div>
+            <div class="bg-white/5 rounded-lg p-3">
+              <p class="text-slate-400">Avg Score</p>
+              <p id="stat-avg-score" class="text-lg font-semibold">0%</p>
+            </div>
+            <div class="bg-white/5 rounded-lg p-3">
+              <p class="text-slate-400">Streak</p>
+              <p id="stat-streak" class="text-lg font-semibold">0 days</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Upload -->
+    <section id="upload" class="glass rounded-3xl p-8 border border-white/5">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <p class="text-xs text-indigo-300 uppercase tracking-[0.3em]">Step 1</p>
+          <h3 class="text-2xl font-bold text-white">Upload & Extract</h3>
+          <p class="text-slate-300 text-sm">PDF / text / image. OCR-ready placeholder.</p>
+        </div>
+        <span class="px-3 py-1 text-xs rounded-full bg-indigo-500/20 text-indigo-200 border border-indigo-400/30">Secure · Private</span>
+      </div>
+      <div class="grid md:grid-cols-3 gap-4">
+        <label class="col-span-2 border-2 border-dashed border-white/10 rounded-2xl p-6 flex flex-col gap-3 items-center justify-center cursor-pointer hover:border-indigo-400/50 transition">
+          <input id="file-input" type="file" class="hidden" accept=".pdf,.txt,image/*" multiple />
+          <p class="text-slate-200 font-semibold">Drop your notes or click to upload</p>
+          <p class="text-slate-400 text-sm">Upload up to 5 files (PDF, TXT, or images for OCR)</p>
+        </label>
+        <div class="col-span-2 md:col-span-3 bg-white/5 rounded-2xl p-4 border border-white/10">
+          <p class="text-sm text-slate-200 font-semibold mb-2">Selected files</p>
+          <ul id="file-list" class="text-sm text-slate-300 space-y-1">
+            <li class="text-slate-500">No files selected.</li>
+          </ul>
+        </div>
+        <div class="bg-white/5 rounded-2xl p-4 border border-white/10 space-y-3">
+          <p class="text-sm text-slate-200 font-semibold">Or paste text</p>
+          <textarea id="text-input" class="w-full h-28 bg-slate-900/50 border border-white/10 rounded-xl p-3 text-sm" placeholder="Paste your notes here..."></textarea>
+          <button id="btn-process" class="w-full py-2 rounded-lg gradient text-slate-900 font-semibold">Process Notes</button>
+          <p class="text-[11px] text-slate-400">In production: send to OCR API (images) then to LLM for summarization.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Summary -->
+    <section id="summary" class="glass rounded-3xl p-8 border border-white/5">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <p class="text-xs text-indigo-300 uppercase tracking-[0.3em]">Step 2</p>
+          <h3 class="text-2xl font-bold text-white">AI Summary Generator</h3>
+          <p class="text-slate-300 text-sm">Structured, concise, topic-aware.</p>
+        </div>
+        <button id="btn-refresh-summary" class="px-3 py-2 rounded-lg bg-white/10 border border-white/10 text-sm">Regenerate</button>
+      </div>
+      <div id="summary-content" class="bg-slate-900/50 border border-white/10 rounded-2xl p-5 text-sm text-slate-200 min-h-[140px]">
+        No summary yet. Upload notes to generate.
+      </div>
+    </section>
+
+    <!-- Quiz -->
+    <section id="quiz" class="glass rounded-3xl p-8 border border-white/5">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <p class="text-xs text-indigo-300 uppercase tracking-[0.3em]">Step 3</p>
+          <h3 class="text-2xl font-bold text-white">AI Quiz Generator</h3>
+          <p class="text-slate-300 text-sm">MCQs with explanations by difficulty.</p>
+        </div>
+        <div class="flex flex-wrap gap-2 items-center">
+          <select id="difficulty" class="bg-slate-900/70 border border-white/10 rounded-lg px-3 py-2 text-sm">
+            <option>Easy</option><option>Medium</option><option>Hard</option>
+          </select>
+          <input id="mcq-count" type="number" min="1" max="10" value="5" class="w-24 bg-slate-900/70 border border-white/10 rounded-lg px-3 py-2 text-sm" title="Number of MCQs (1-10)" />
+          <input id="quiz-timer-min" type="number" min="5" max="120" value="25" class="w-24 bg-slate-900/70 border border-white/10 rounded-lg px-3 py-2 text-sm" title="Quiz timer minutes" />
+          <button id="btn-generate-quiz" class="px-4 py-2 rounded-lg gradient text-slate-900 font-semibold">Generate</button>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 mb-3">
+        <div class="text-sm text-slate-300">Quiz Timer: <span id="quiz-timer-display" class="font-semibold text-white">--:--</span></div>
+        <button id="quiz-timer-start" class="px-3 py-2 rounded-lg bg-white/10 border border-white/10 text-sm">Start/Reset</button>
+      </div>
+      <div id="quiz-area" class="space-y-4"></div>
+      <div id="quiz-feedback" class="mt-4 text-sm text-slate-200 space-y-2"></div>
+      <div class="flex gap-3 mt-4">
+        <button id="btn-submit-quiz" class="px-4 py-2 rounded-lg bg-white/10 border border-white/10">Submit</button>
+        <button id="btn-reattempt" class="px-4 py-2 rounded-lg bg-white/5 border border-white/10">Reattempt</button>
+      </div>
+      <p id="quiz-score" class="text-slate-200 mt-2"></p>
+    </section>
+
+    <!-- Dashboard -->
+    <section id="dashboard" class="glass rounded-3xl p-8 border border-white/5">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <p class="text-xs text-indigo-300 uppercase tracking-[0.3em]">Analytics</p>
+          <h3 class="text-2xl font-bold text-white">Progress Dashboard</h3>
+          <p class="text-slate-300 text-sm">Accuracy, weak topics, streaks, study time.</p>
+        </div>
+        <button id="btn-reset-data" class="px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/30 text-sm text-red-200">Reset</button>
+      </div>
+      <div class="grid md:grid-cols-4 gap-4">
+        <div class="bg-white/5 rounded-2xl p-4 border border-white/10">
+          <p class="text-slate-400 text-sm">Avg Score</p>
+          <p id="dash-avg" class="text-2xl font-bold text-white">0%</p>
+        </div>
+        <div class="bg-white/5 rounded-2xl p-4 border border-white/10">
+          <p class="text-slate-400 text-sm">Attempts</p>
+          <p id="dash-attempts" class="text-2xl font-bold text-white">0</p>
+        </div>
+        <div class="bg-white/5 rounded-2xl p-4 border border-white/10">
+          <p class="text-slate-400 text-sm">Weak Topics</p>
+          <p id="dash-weak" class="text-sm text-indigo-100">—</p>
+        </div>
+        <div class="bg-white/5 rounded-2xl p-4 border border-white/10">
+          <p class="text-slate-400 text-sm">Streak</p>
+          <p id="dash-streak" class="text-2xl font-bold text-white">0 days</p>
+        </div>
+      </div>
+      <div class="mt-4 bg-white/5 rounded-2xl p-4 border border-white/10">
+        <p class="text-slate-300 text-sm mb-2">Study time (Pomodoro)</p>
+        <p id="dash-time" class="text-lg font-semibold text-white">0 min</p>
+      </div>
+    </section>
+
+    <!-- Pomodoro -->
+    <section id="pomodoro" class="glass rounded-3xl p-8 border border-white/5">
+      <div class="flex items-center justify-between mb-4">
+        <div>
+          <p class="text-xs text-indigo-300 uppercase tracking-[0.3em]">Focus</p>
+          <h3 class="text-2xl font-bold text-white">Pomodoro Timer</h3>
+          <p class="text-slate-300 text-sm">25/50 focus, short/long breaks; logs time to dashboard.</p>
+        </div>
+        <select id="session-type" class="bg-slate-900/70 border border-white/10 rounded-lg px-3 py-2 text-sm">
+          <option value="25">Focus 25m</option>
+          <option value="50">Focus 50m</option>
+          <option value="5">Short Break 5m</option>
+          <option value="15">Long Break 15m</option>
+        </select>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="w-32 h-32 rounded-full border-4 border-indigo-400/60 flex items-center justify-center text-3xl font-bold" id="timer-display">25:00</div>
+        <div class="space-x-2">
+          <button id="btn-start" class="px-4 py-2 rounded-lg gradient text-slate-900 font-semibold">Start</button>
+          <button id="btn-pause" class="px-4 py-2 rounded-lg bg-white/10 border border-white/10">Pause</button>
+          <button id="btn-reset" class="px-4 py-2 rounded-lg bg-white/5 border border-white/10">Reset</button>
+        </div>
+      </div>
+      <p id="timer-status" class="text-slate-300 text-sm mt-3">Ready to focus.</p>
+    </section>
+  </main>
+
+  <!-- Login Modal -->
+  <div id="login-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 px-4">
+    <div class="bg-slate-900 border border-white/10 rounded-2xl w-full max-w-lg p-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs text-indigo-300 uppercase tracking-[0.3em]">Sign in</p>
+          <h3 class="text-xl font-bold text-white">Choose a method</h3>
+          <p class="text-slate-300 text-sm">Login with Google or email/password. Profile photo & bio are optional.</p>
+        </div>
+        <button id="login-close" class="text-slate-400 hover:text-white text-lg">&times;</button>
+      </div>
+      <div class="space-y-3">
+        <button id="login-google" class="w-full py-2 rounded-lg gradient text-slate-900 font-semibold">Continue with Google</button>
+        <div class="grid md:grid-cols-2 gap-3">
+          <input id="login-email" type="email" class="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="Email" />
+          <input id="login-password" type="password" class="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="Password" />
+        </div>
+        <div class="grid md:grid-cols-2 gap-3">
+          <input id="login-photo" type="text" class="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="Profile photo (jpg/png URL, optional)" />
+          <input id="login-bio" type="text" class="w-full bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-sm" placeholder="Bio (optional)" />
+        </div>
+        <button id="login-email-submit" class="w-full py-2 rounded-lg bg-white/10 border border-white/10 text-slate-100">Login with Email</button>
+        <p id="login-error" class="text-sm text-red-300"></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
