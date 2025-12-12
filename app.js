@@ -1,4 +1,3 @@
-const STORAGE_KEY = 'study-assistant-v1';
 const state = {
   notes: '',
   summary: '',
