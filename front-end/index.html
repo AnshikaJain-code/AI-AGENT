@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-slate-900 text-slate-100">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EaseStudy</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen bg-slate-950">
+  <header class="border-b border-white/5 sticky top-0 z-30 backdrop-blur bg-slate-950/70">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="router.navigate('home')">
+        <div class="w-10 h-10 rounded-xl gradient"></div>
+        <div>
+          <p class="text-sm text-slate-400">AI-Powered</p>
+          <h1 class="text-xl font-bold text-slate-50">Study Assistant</h1>
+        </div>
+      </div>
+      <nav class="hidden md:flex ds gap-4 text-sm text-slate-300"></nav>
+        <a href="#" data-page="home" class="nav-link hover:text-white transition">Home</a>
+        <a href="#" data-page="upload" class="nav-link hover:text-white transition">Upload</a>
+        <a href="#" data-page="summary" class="nav-link hover:text-white transition">Summary</a>
+        <a href="#" data-page="quiz" class="nav-link hover:text-white transition">Quiz</a>
+        <a href="#" data-page="dashboard" class="nav-link hover:text-white transition">Dashboard</a>
+        <a href="#" data-page="pomodoro" class="nav-link hover:text-white transition">Pomodoro</a>
+        <a href="#" data-page="predictor" class="nav-link hover:text-white transition text-emerald-300">Question Predictor</a>
+        <a href="#" data-page="signup" class="nav-link hover:text-white transition text-purple-300">Signup/Login</a>
+         <a href="#" id="logout-btn" class="nav-link text-red-400 hover:underline hidden">Logout</a>
+      </nav>
+      <button class="md:hidden px-3 py-2 rounded-lg bg-white/10 border border-white/10 text-sm" id="mobile-menu-btn">☰</button>
+    </div>
+    <div id="mobile-menu" class="hidden md:hidden border-t border-white/5 bg-slate-950/95 backdrop-blur">
+      <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col gap-2 text-sm">
+        <a href="#" data-page="home" class="nav-link py-2">Home</a>
+        <a href="#" data-page="upload" class="nav-link py-2">Upload</a>
+        <a href="#" data-page="summary" class="nav-link py-2">Summary</a>
+        <a href="#" data-page="quiz" class="nav-link py-2">Quiz</a>
+        <a href="#" data-page="dashboard" class="nav-link py-2">Dashboard</a>
+        <a href="#" data-page="pomodoro" class="nav-link py-2">Pomodoro</a>
+        <a href="#" data-page="predictor" class="nav-link py-2 text-emerald-300">Question Predictor</a>
+        <a href="#" data-page="admin" class="nav-link py-2 text-purple-300">Admin</a>
+       
+
+      </div>
+      
+    </div>
+  </header>
+
+  <main id="app-content" class="max-w-6xl mx-auto px-4 py-10">
+    <!-- Pages will be loaded here -->
+  </main> 
+ <!-- Place this inside <body> -->
+<div id="popup-container" class="fixed top-5 right-5 z-50"></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
